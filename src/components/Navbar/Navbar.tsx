@@ -14,8 +14,7 @@ import { useState } from "react";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeLink, setActiveLink] = useState("/");
-  
+
   const currentPath = window.location.pathname;
 
   return (

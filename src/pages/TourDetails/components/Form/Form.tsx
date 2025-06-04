@@ -11,7 +11,8 @@ import {
 import { addToast, ToastProvider } from "@heroui/react";
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from "react-router-dom";
-import { useState, ChangeEvent } from "react";
+import { useState } from "react";
+import type { ChangeEvent } from "react";
 import "./Form.scss";
 
 

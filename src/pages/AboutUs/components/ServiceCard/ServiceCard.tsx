@@ -1,4 +1,3 @@
-import React from 'react';
 import './ServiceCard.scss';
 
 interface ServiceCardProps {

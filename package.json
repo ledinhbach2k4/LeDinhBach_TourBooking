@@ -10,15 +10,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@heroui/react": "^2.7.9",
     "@popperjs/core": "^2.11.8",
     "@reduxjs/toolkit": "^2.8.2",
+    "@tanstack/react-query": "^5.80.3",
     "@types/prop-types": "^15.7.14",
     "@types/react-router-dom": "^5.3.3",
     "chart.js": "^4.4.9",
     "prop-types": "^15.8.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router-dom": "^7.6.1"
+    "react-router-dom": "^7.6.1",
+    "swiper": "^11.2.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
