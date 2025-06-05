@@ -59,7 +59,7 @@ export const InfoSide = () => {
   };
   
   
-  const renderRatingStars = (rating: number): JSX.Element => {
+  const renderRatingStars = (rating: number): TSX.Element => {
     const stars = [];
     const roundedRating = Math.round(rating);
     
