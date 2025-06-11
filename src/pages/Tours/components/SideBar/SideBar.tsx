@@ -1,199 +1,287 @@
-import { CheckboxGroup, Checkbox, Slider, Input, Button } from "@heroui/react";
-import React, { useState } from "react";
-import "./SideBar.scss";
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import {
+  Box,
+  Typography,
+  Slider,
+  TextField,
+  Button,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+  useTheme,
+  useMediaQuery,
+} from '@mui/material';
+import './SideBar.scss';
+
+interface FilterValues {
+  minPrice: number;
+  maxPrice: number;
+  duration: string[];
+  rating: string[];
+  region: string[];
+}
 
 interface SideBarProps {
-  onApply: (filters: any) => void;
+  onApply: (filters: Partial<FilterValues>) => void;
   onReset: () => void;
 }
 
+const minValue = 0;
+const maxValue = 20000;
+
+const validationSchema = Yup.object({
+  minPrice: Yup.number().min(minValue).max(Yup.ref('maxPrice')).default(minValue),
+  maxPrice: Yup.number().min(Yup.ref('minPrice')).max(maxValue).default(maxValue),
+  duration: Yup.array().of(Yup.string()),
+  rating: Yup.array().of(Yup.string()).max(2, 'Select up to 2 ratings'),
+  region: Yup.array().of(Yup.string()),
+});
+
 export const SideBar: React.FC<SideBarProps> = ({ onApply, onReset }) => {
-  const minValue = 0;
-  const maxValue = 20000;
-  const [sliderValue, setSliderValue] = useState([minValue, maxValue]);
-  const [selectedDurations, setSelectedDurations] = useState<string[]>([]);
-  const [selectedRatings, setSelectedRatings] = useState<string[]>([]);
-  const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
-  
-  const handleSliderChange = (newValue: any) => {
-    setSliderValue(newValue);
-  };
-  
-  const handleMinInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value === '' ? 0 : Number(e.target.value);
-    const newMin = Math.max(minValue, Math.min(value, sliderValue[1] - 100));
-    setSliderValue([newMin, sliderValue[1]]);
-  };
-  
-  const handleMaxInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value === '' ? maxValue : Number(e.target.value);
-    const newMax = Math.min(maxValue, Math.max(value, sliderValue[0] + 100));
-    setSliderValue([sliderValue[0], newMax]);
-  };
-  
-  const applyFilters = () => {
-    onApply({
-      minPrice: sliderValue[0] !== minValue ? sliderValue[0] : undefined,
-      maxPrice: sliderValue[1] !== maxValue ? sliderValue[1] : undefined,
-      duration: selectedDurations.length ? selectedDurations : undefined,
-      rating: selectedRatings.length ? selectedRatings : undefined,
-      region: selectedRegions.length ? selectedRegions : undefined,
-    });
-  };
-  
-  const resetFilters = () => {
-    setSliderValue([minValue, maxValue]);
-    setSelectedDurations([]);
-    setSelectedRatings([]);
-    setSelectedRegions([]);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  const formik = useFormik<FilterValues>({
+    initialValues: {
+      minPrice: minValue,
+      maxPrice: maxValue,
+      duration: [],
+      rating: [],
+      region: [],
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      onApply({
+        minPrice: values.minPrice !== minValue ? values.minPrice : undefined,
+        maxPrice: values.maxPrice !== maxValue ? values.maxPrice : undefined,
+        duration: values.duration.length ? values.duration : undefined,
+        rating: values.rating.length ? values.rating : undefined,
+        region: values.region.length ? values.region : undefined,
+      });
+    },
+  });
+
+  const handleReset = () => {
+    formik.resetForm();
     onReset();
   };
-  
-  const hasActiveFilters = () => {
-    return (
-      sliderValue[0] !== minValue ||
-      sliderValue[1] !== maxValue ||
-      selectedDurations.length > 0 ||
-      selectedRatings.length > 0 ||
-      selectedRegions.length > 0
-    );
+
+  const hasActiveFilters = () =>
+    formik.values.minPrice !== minValue ||
+    formik.values.maxPrice !== maxValue ||
+    formik.values.duration.length > 0 ||
+    formik.values.rating.length > 0 ||
+    formik.values.region.length > 0;
+
+  const handleSliderChange = (_: Event, value: number | number[]) => {
+    if (Array.isArray(value)) {
+      formik.setFieldValue('minPrice', value[0]);
+      formik.setFieldValue('maxPrice', value[1]);
+    }
   };
 
   return (
-    <div className="SideBar">
-      <div className="SideBar-header">
-        <h3>Фільтри</h3>
+    <Box className="SideBar" component="form" onSubmit={formik.handleSubmit}>
+      {/* Header */}
+      <Box className="SideBar-header">
+        <Typography variant="h6" component="h3">
+          Filters
+        </Typography>
         {hasActiveFilters() && (
-          <button className="SideBar-reset-link" onClick={resetFilters}>
-            Очистити все
-          </button>
+          <Button
+            variant="text"
+            color="primary"
+            className="SideBar-reset-link"
+            onClick={handleReset}
+            size="small"
+          >
+            Clear All
+          </Button>
         )}
-      </div>
-      
-      <div className="SideBar-section">
-        <h4 className="SideBar-section-title">Ціна (₴)</h4>
-        <div className="SideBar-slider">
+      </Box>
+
+      {/* Price Filter */}
+      <Box className="SideBar-section">
+        <Typography variant="subtitle1" className="SideBar-section-title">
+          Price (₴)
+        </Typography>
+        <Box className="SideBar-slider">
           <Slider
-            maxValue={maxValue}
-            minValue={minValue}
-            step={100}
-            value={sliderValue}
+            value={[formik.values.minPrice, formik.values.maxPrice]}
             onChange={handleSliderChange}
-            size="sm"
+            min={minValue}
+            max={maxValue}
+            step={100}
+            valueLabelDisplay="auto"
             className="SideBar-slider-control"
           />
-          <div className="SideBar-inputs">
-            <div className="SideBar-input-group">
-              <label>Від</label>
-              <Input 
-                value={sliderValue[0].toString()} 
-                onChange={handleMinInputChange}
-                size="sm"
+          <Box className="SideBar-inputs">
+            <Box className="SideBar-input-group">
+              <Typography variant="caption">From</Typography>
+              <TextField
+                name="minPrice"
+                value={formik.values.minPrice}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                size="small"
+                type="number"
+                inputProps={{ min: minValue, max: formik.values.maxPrice - 100 }}
+                aria-label="Minimum price"
                 className="SideBar-input"
-                aria-label="Мінімальна ціна"
+                error={formik.touched.minPrice && !!formik.errors.minPrice}
+                helperText={formik.touched.minPrice && formik.errors.minPrice}
               />
-            </div>
-            <div className="SideBar-input-group">
-              <label>До</label>
-              <Input 
-                value={sliderValue[1].toString()} 
-                onChange={handleMaxInputChange}
-                size="sm"
+            </Box>
+            <Box className="SideBar-input-group">
+              <Typography variant="caption">To</Typography>
+              <TextField
+                name="maxPrice"
+                value={formik.values.maxPrice}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                size="small"
+                type="number"
+                inputProps={{ min: formik.values.minPrice + 100, max: maxValue }}
+                aria-label="Maximum price"
                 className="SideBar-input"
-                aria-label="Максимальна ціна"
+                error={formik.touched.maxPrice && !!formik.errors.maxPrice}
+                helperText={formik.touched.maxPrice && formik.errors.maxPrice}
               />
-            </div>
-          </div>
-        </div>
-      </div>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
 
-      <div className="SideBar-section">
-        <CheckboxGroup
-          label="Регіон"
-          value={selectedRegions}
-          onChange={setSelectedRegions}
-          className="SideBar-checkbox-group"
-        >
-          <Checkbox value="1" className="SideBar-checkbox">Європа</Checkbox>
-          <Checkbox value="2" className="SideBar-checkbox">Азія</Checkbox>
-          <Checkbox value="3" className="SideBar-checkbox">Америка</Checkbox>
-          <Checkbox value="4" className="SideBar-checkbox">Африка</Checkbox>
-          <Checkbox value="5" className="SideBar-checkbox">Океанія</Checkbox>
-        </CheckboxGroup>
-      </div>
+      {/* Region Filter */}
+      <Box className="SideBar-section">
+        <Typography variant="subtitle1" className="SideBar-section-title">
+          Region
+        </Typography>
+        <FormGroup className="SideBar-checkbox-group">
+          {[
+            { value: '1', label: 'Europe' },
+            { value: '2', label: 'Asia' },
+            { value: '3', label: 'America' },
+            { value: '4', label: 'Africa' },
+            { value: '5', label: 'Oceania' },
+          ].map(({ value, label }) => (
+            <FormControlLabel
+              key={value}
+              control={
+                <Checkbox
+                  name="region"
+                  value={value}
+                  checked={formik.values.region.includes(value)}
+                  onChange={formik.handleChange}
+                  className="SideBar-checkbox"
+                />
+              }
+              label={label}
+            />
+          ))}
+        </FormGroup>
+      </Box>
 
-      <div className="SideBar-section">
-        <CheckboxGroup
-          label="Тривалість туру"
-          value={selectedDurations}
-          onChange={setSelectedDurations}
-          className="SideBar-checkbox-group"
-        >
-          <Checkbox value="5" className="SideBar-checkbox">5 днів</Checkbox>
-          <Checkbox value="7" className="SideBar-checkbox">7 днів</Checkbox>
-          <Checkbox value="10" className="SideBar-checkbox">10 днів</Checkbox>
-        </CheckboxGroup>
-      </div>
+      {/* Duration Filter */}
+      <Box className="SideBar-section">
+        <Typography variant="subtitle1" className="SideBar-section-title">
+          Tour Duration
+        </Typography>
+        <FormGroup className="SideBar-checkbox-group">
+          {[
+            { value: '5', label: '5 days' },
+            { value: '7', label: '7 days' },
+            { value: '10', label: '10 days' },
+          ].map(({ value, label }) => (
+            <FormControlLabel
+              key={value}
+              control={
+                <Checkbox
+                  name="duration"
+                  value={value}
+                  checked={formik.values.duration.includes(value)}
+                  onChange={formik.handleChange}
+                  className="SideBar-checkbox"
+                />
+              }
+              label={label}
+            />
+          ))}
+        </FormGroup>
+      </Box>
 
-      <div className="SideBar-section">
-        <CheckboxGroup
-          label="Рейтинг туру"
-          value={selectedRatings}
-          onChange={(newRatings) => {
-            if (newRatings.length <= 2) {
-              setSelectedRatings(newRatings);
-            }
-          }}
-          className="SideBar-checkbox-group"
-        >
-          <div className="SideBar-ratings">
-            <Checkbox value="5" className="SideBar-checkbox">
-              <div className="SideBar-rating">
-                <span className="stars">★★★★★</span>
-              </div>
-            </Checkbox>
-            <Checkbox value="4" className="SideBar-checkbox">
-              <div className="SideBar-rating">
-                <span className="stars">★★★★</span><span className="empty-stars">★</span>
-              </div>
-            </Checkbox>
-            <Checkbox value="3" className="SideBar-checkbox">
-              <div className="SideBar-rating">
-                <span className="stars">★★★</span><span className="empty-stars">★★</span>
-              </div>
-            </Checkbox>
-            <Checkbox value="2" className="SideBar-checkbox">
-              <div className="SideBar-rating">
-                <span className="stars">★★</span><span className="empty-stars">★★★</span>
-              </div>
-            </Checkbox>
-            <Checkbox value="1" className="SideBar-checkbox">
-              <div className="SideBar-rating">
-                <span className="stars">★</span><span className="empty-stars">★★★★</span>
-              </div>
-            </Checkbox>
-          </div>
-        </CheckboxGroup>
-      </div>
+      {/* Rating Filter */}
+      <Box className="SideBar-section">
+        <Typography variant="subtitle1" className="SideBar-section-title">
+          Tour Rating
+        </Typography>
+        <FormGroup className="SideBar-checkbox-group">
+          <Box className="SideBar-ratings">
+            {[
+              { value: '5', stars: '★★★★★' },
+              { value: '4', stars: '★★★★', empty: '★' },
+              { value: '3', stars: '★★★', empty: '★★' },
+              { value: '2', stars: '★★', empty: '★★★' },
+              { value: '1', stars: '★', empty: '★★★★' },
+            ].map(({ value, stars, empty }) => (
+              <FormControlLabel
+                key={value}
+                control={
+                  <Checkbox
+                    name="rating"
+                    value={value}
+                    checked={formik.values.rating.includes(value)}
+                    onChange={(e) => {
+                      const newRatings = e.target.checked
+                        ? [...formik.values.rating, value]
+                        : formik.values.rating.filter((r) => r !== value);
+                      if (newRatings.length <= 2) {
+                        formik.setFieldValue('rating', newRatings);
+                      }
+                    }}
+                    className="SideBar-checkbox"
+                    disabled={formik.values.rating.length >= 2 && !formik.values.rating.includes(value)}
+                  />
+                }
+                label={
+                  <Box className="SideBar-rating">
+                    <span className="stars">{stars}</span>
+                    {empty && <span className="empty-stars">{empty}</span>}
+                  </Box>
+                }
+              />
+            ))}
+          </Box>
+          {formik.touched.rating && formik.errors.rating && (
+            <Typography color="error" variant="caption">
+              {formik.errors.rating}
+            </Typography>
+          )}
+        </FormGroup>
+      </Box>
 
-      <div className="SideBar-actions">
-        <Button 
-          onPress={resetFilters} 
-          color="default" 
-          variant="bordered"
+      {/* Actions */}
+      <Box className="SideBar-actions">
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={handleReset}
           className="SideBar-btn-reset"
+          fullWidth={isMobile}
         >
-          Відмінити
+          Cancel
         </Button>
-        <Button 
-          onPress={applyFilters} 
-          color="primary" 
-          variant="solid"
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
           className="SideBar-btn-apply"
+          fullWidth={isMobile}
         >
-          Застосувати
+          Apply
         </Button>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
