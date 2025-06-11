@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { Form } from "../Form/Form";
 import "./InfoSide.scss";
+import type { JSX } from "react";
 
 
 interface TourData {
@@ -59,7 +60,7 @@ export const InfoSide = () => {
   };
   
   
-  const renderRatingStars = (rating: number): TSX.Element => {
+  const renderRatingStars = (rating: number): JSX.Element => {
     const stars = [];
     const roundedRating = Math.round(rating);
     

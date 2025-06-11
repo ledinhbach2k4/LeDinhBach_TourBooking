@@ -7,9 +7,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router';
 
 // Import styles
-import 'swiper/swiper.min.css';
-import 'swiper/components/pagination/pagination.min.css';
-import 'swiper/components/navigation/navigation.min.css';
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 import './TourSwiper.scss';
 
 // Types

@@ -1,148 +1,214 @@
-import React, { useState, useEffect } from 'react';
-import { Pagination, A11y, Autoplay, Navigation, EffectFade } from 'swiper/modules';
-import { Swiper as SwiperBase, SwiperSlide } from 'swiper/react';
-import { Button } from "@heroui/react";
-import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
-import { Loader } from '../Loader/Loader';
+import { useEffect, useState } from 'react'
+import { Swiper as SwiperBase, SwiperSlide } from 'swiper/react'
+import { Pagination, Navigation, A11y, Autoplay, EffectFade } from 'swiper/modules'
+import { Box, Button, Typography } from '@mui/material'
+import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchTours } from "@/store/slices/toursSlice";
+import { RootState } from '@/store'
+import { Loader } from "@/pages/Main/components/Loader/Loader";
 
-import 'swiper/swiper.min.css';
-import 'swiper/components/pagination/pagination.min.css';
-import 'swiper/components/navigation/navigation.min.css';
-import 'swiper/components/effect-fade/effect-fade.min.css';
-import './Swiper.scss';
+import 'swiper/css'
+import 'swiper/css/pagination'
+import 'swiper/css/navigation'
+import 'swiper/css/effect-fade'
 
-interface Tour {
-  id: number;
-  title: string;
-  description: string;
-  callToAction: string;
-  imageSrc: string;
-}
+export const Swiper = () => {
+  const [imgError, setImgError] = useState<{ [key: number]: boolean }>({})
+  const dispatch = useDispatch()
+  const { tours, loading, error } = useSelector((state: RootState) => state.tours)
 
-export const Swiper: React.FC = () => {
-  const [imgError, setImgError] = useState<{[key: number]: boolean}>({});
-  
-  const { isPending, error, data } = useQuery({
-    queryKey: ['toursData'],
-    queryFn: async() => {
-      try {
-        const response = await fetch('/api/tourswiper');
-        
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
-        }
-        
-        const tours: Tour[] = await response.json();
-        return tours;
-      } catch (err) {
-        console.error('Failed to fetch tours:', err);
-        throw err;
-      }
-    },
-  });
-  
-  const handleImageError = (tourId: number) => {
-    setImgError(prev => ({
-      ...prev,
-      [tourId]: true
-    }));
-    console.error(`Failed to load image for tour ${tourId}`);
-  };
-  
-  // Preload images
   useEffect(() => {
-    if (data) {
-      data.slice(0, 4).forEach(tour => {
-        const img = new Image();
-        img.src = `http://localhost:1323${tour.imageSrc}`;
-        img.onerror = () => handleImageError(tour.id);
-      });
+    dispatch(fetchTours() as any)
+  }, [dispatch])
+
+  useEffect(() => {
+    if (tours) {
+      tours.slice(0, 4).forEach((tour) => {
+        const img = new Image()
+        img.src = `http://localhost:1323${tour.imageSrc}`
+        img.onerror = () => {
+          setImgError((prev) => ({ ...prev, [tour.id]: true }))
+          console.error(`Failed to load image for tour ${tour.id}`)
+        }
+      })
     }
-  }, [data]);
-  
-  if (isPending) {
+  }, [tours])
+
+  if (loading) {
     return (
-      <div className="swiper-loader-container">
+      <Box sx={{ height: 400, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Loader />
-      </div>
-    );
+      </Box>
+    )
   }
-  
-  if (error || !data) {
+
+  if (error || !tours) {
     return (
-      <div className="swiper-error">
-        <h3>Не вдалося завантажити тури</h3>
-        <p>Спробуйте оновити сторінку або зв'яжіться з нами</p>
-        <Button color="primary" onClick={() => window.location.reload()}>
+      <Box
+        sx={{
+          height: 400,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          bgcolor: '#f9f9f9',
+          borderRadius: 2,
+          p: 4,
+          textAlign: 'center',
+          gap: 2,
+        }}
+      >
+        <Typography variant="h6">Не вдалося завантажити тури</Typography>
+        <Typography variant="body2">Спробуйте оновити сторінку або зв'яжіться з нами</Typography>
+        <Button variant="contained" color="primary" onClick={() => window.location.reload()}>
           Спробувати знову
         </Button>
-      </div>
-    );
+      </Box>
+    )
   }
-  
-  const tours = data.slice(0, 4);
-  
-  if (tours.length === 0) {
+
+  const displayTours = tours.slice(0, 4)
+
+  if (displayTours.length === 0) {
     return (
-      <div className="swiper-empty">
-        <h3>Немає доступних турів</h3>
-        <Link to="/Tours">
-          <Button color="primary">Переглянути всі тури</Button>
-        </Link>
-      </div>
-    );
+      <Box
+        sx={{
+          height: 400,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          bgcolor: '#f9f9f9',
+          borderRadius: 2,
+          p: 4,
+          textAlign: 'center',
+          gap: 2,
+        }}
+      >
+        <Typography variant="h6">Немає доступних турів</Typography>
+        <Button component={Link} to="/Tours" variant="contained" color="primary">
+          Переглянути всі тури
+        </Button>
+      </Box>
+    )
   }
 
   return (
-    <div className="swiper-container">
-      <SwiperBase
-        modules={[Pagination, Navigation, A11y, Autoplay, EffectFade]}
-        slidesPerView={1}
-        pagination={{ 
-          clickable: true,
-          dynamicBullets: true
-        }}
-        navigation
-        effect="fade"
-        className="swiper"
-        autoplay={{ 
-          delay: 5000,
-          disableOnInteraction: false
-        }}
-      >
-        {tours.map(tour => (
-          <SwiperSlide 
-            key={tour.id} 
-            className="swiper-slide"
+  <Box
+    sx={{
+      my: 6,
+      position: 'relative',
+      height: { xs: '75vh', md: '80vh' },
+      maxHeight: 800,
+      '& .swiper-pagination-bullet': {
+        width: 12,
+        height: 12,
+        bgcolor: '#fff',
+        opacity: 0.6,
+      },
+      '& .swiper-pagination-bullet-active': {
+        opacity: 1,
+        bgcolor: '#fff',
+      },
+      '& .swiper-button-prev, & .swiper-button-next': {
+        color: '#fff',
+        bgcolor: 'rgba(0, 0, 0, 0.3)',
+        width: 50,
+        height: 50,
+        borderRadius: '50%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.5)' },
+        '&::after': { fontSize: '1.5rem' },
+      },
+    }}
+  >
+    <SwiperBase
+      modules={[Pagination, Navigation, A11y, Autoplay, EffectFade]}
+      slidesPerView={1}
+      pagination={{ clickable: true, dynamicBullets: true }}
+      navigation
+      effect="fade"
+      autoplay={{ delay: 5000, disableOnInteraction: false }}
+    >
+      {displayTours.map((tour) => (
+        <SwiperSlide key={tour.id}>
+          <Box
+            sx={{
+              position: 'relative',
+              height: '100%',
+              overflow: 'hidden',
+              '&:hover .swiper-slide-background': { transform: 'scale(1.05)' },
+            }}
           >
-            <div 
-              className="swiper-slide-background" 
-              style={{
-                backgroundImage: imgError[tour.id] 
-                  ? 'url("/images/fallback-tour.jpg")' 
-                  : `url("http://localhost:1323${tour.imageSrc}")`
+            <Box
+              className="swiper-slide-background"
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                backgroundImage: imgError[tour.id]
+                  ? 'url("/images/fallback-tour.jpg")'
+                  : `url("http://localhost:1323${tour.imageSrc}")`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                transition: 'transform 8s ease',
               }}
-            ></div>
-            <div className="swiper-slide-overlay"></div>
-            <div className="swiper-slide-wrapper">
-              <h2 className="swiper-slide-title">{tour.title}</h2>
-              <p className="swiper-slide-description">{tour.description}</p>
-              <Link to={`/TourDetails/${tour.id}`} className="swiper-slide-link">
-                <Button
-                  className="swiper-slide-action"
-                  variant="shadow"
-                  color="secondary"
-                  radius="full"
-                  size="lg"
-                >
-                  {tour.callToAction}
-                </Button>
-              </Link>
-            </div>
-          </SwiperSlide>
-        ))}
-      </SwiperBase>
-    </div>
-  );
-};
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background:
+                  'linear-gradient(to right, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.2) 100%)',
+                zIndex: 1,
+              }}
+            />
+            <Box
+              sx={{
+                position: 'relative',
+                zIndex: 2,
+                width: { xs: '90%', sm: '80%', md: '50%' },
+                maxWidth: 700,
+                p: { xs: 2, md: 3 },
+                ml: { xs: 'auto', md: '10%' },
+                mr: { xs: 'auto', md: 0 },
+                bgcolor: 'rgba(255, 255, 255, 0.85)',
+                borderRadius: 2,
+                boxShadow: 3,
+                backdropFilter: 'blur(4px)',
+                transition: 'transform 0.3s ease',
+              }}
+            >
+              <Typography variant="h4" sx={{ fontWeight: 700, mb: 2, color: '#333' }}>
+                {tour.title}
+              </Typography>
+              <Typography variant="body1" sx={{ lineHeight: 1.6, mb: 3, color: '#555' }}>
+                {tour.description}
+              </Typography>
+              <Button
+                component={Link}
+                to={`/TourDetails/${tour.id}`}
+                variant="contained"
+                color="secondary"
+                size="large"
+                sx={{ fontWeight: 600 }}
+              >
+                {tour.callToAction}
+              </Button>
+            </Box>
+          </Box>
+        </SwiperSlide>
+      ))}
+    </SwiperBase>
+  </Box>
+)
+
+}

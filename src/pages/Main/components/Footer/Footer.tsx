@@ -1,45 +1,70 @@
-import './Footer.scss';
-import { Logo } from '../../../../components/Logo/Logo';
+import { Box, Container, Grid, Typography, Link } from '@mui/material'
 
-export const Footer: React.FC = () => {
-  const currentYear = new Date().getFullYear();
-  
+export const Footer = () => {
+  const currentYear = new Date().getFullYear()
+
   return (
-    <footer className="footer">
-      <div className="footer-container">
-        <div className="footer-left">
-          <div className="footer-logo">
-            <Logo />
-            <span className="footer-brand">OpenWorld</span>
-          </div>
-          <div className="footer-copyright">© {currentYear} OpenWorld, Inc. All rights reserved.</div>
-        </div>
-        
-        <div className="footer-right">
-          <div className="footer-links">
-            <div className="footer-links-group">
-              <h4 className="footer-links-title">Company</h4>
-              <a href="/AboutUs" className="footer-link">About</a>
-              <a href="/careers" className="footer-link">Careers</a>
-              <a href="/partners" className="footer-link">Partners</a>
-            </div>
-            
-            <div className="footer-links-group">
-              <h4 className="footer-links-title">Legal</h4>
-              <a href="/terms" className="footer-link">Terms</a>
-              <a href="/privacy" className="footer-link">Privacy</a>
-              <a href="/security" className="footer-link">Security</a>
-            </div>
-            
-            <div className="footer-links-group">
-              <h4 className="footer-links-title">Resources</h4>
-              <a href="/status" className="footer-link">Status</a>
-              <a href="/docs" className="footer-link">Docs</a>
-              <a href="/contact" className="footer-link">Contact</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
-};
+    <Box component="footer" sx={{ bgcolor: '#f8f9fa', py: 6, borderTop: '1px solid #e9ecef' }}>
+      <Container maxWidth="lg">
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={4}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#343a40' }}>
+                OpenWorld
+              </Typography>
+            </Box>
+            <Typography variant="body2" color="text.secondary">
+              © {currentYear} OpenWorld, Inc. All rights reserved.
+            </Typography>
+          </Grid>
+          <Grid item xs={12} md={8}>
+            <Grid container spacing={4}>
+              <Grid item xs={12} sm={4}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: '#343a40' }}>
+                  Company
+                </Typography>
+                <Link href="/AboutUs" color="text.secondary" sx={{ display: 'block', mb: 0.5, textDecoration: 'none', '&:hover': { color: '#0077cc' } }}>
+                  About
+                </Link>
+                <Link href="/careers" color="text.secondary" sx={{ display: 'block', mb: 0.5, textDecoration: 'none', '&:hover': { color: '#0077cc' } }}>
+                  Careers
+                </Link>
+                <Link href="/partners" color="text.secondary" sx={{ display: 'block', mb: 0.5, textDecoration: 'none', '&:hover': { color: '#0077cc' } }}>
+                  Partners
+                </Link>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: '#343a40' }}>
+                  Legal
+                </Typography>
+                <Link href="/terms" color="text.secondary" sx={{ display: 'block', mb: 0.5, textDecoration: 'none', '&:hover': { color: '#0077cc' } }}>
+                  Terms
+                </Link>
+                <Link href="/privacy" color="text.secondary" sx={{ display: 'block', mb: 0.5, textDecoration: 'none', '&:hover': { color: '#0077cc' } }}>
+                  Privacy
+                </Link>
+                <Link href="/security" color="text.secondary" sx={{ display: 'block', mb: 0.5, textDecoration: 'none', '&:hover': { color: '#0077cc' } }}>
+                  Security
+                </Link>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: '#343a40' }}>
+                  Resources
+                </Typography>
+                <Link href="/status" color="text.secondary" sx={{ display: 'block', mb: 0.5, textDecoration: 'none', '&:hover': { color: '#0077cc' } }}>
+                  Status
+                </Link>
+                <Link href="/docs" color="text.secondary" sx={{ display: 'block', mb: 0.5, textDecoration: 'none', '&:hover': { color: '#0077cc' } }}>
+                  Docs
+                </Link>
+                <Link href="/contact" color="text.secondary" sx={{ display: 'block', mb: 0.5, textDecoration: 'none', '&:hover': { color: '#0077cc' } }}>
+                  Contact
+                </Link>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
+  )
+}
