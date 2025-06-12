@@ -1,5 +1,5 @@
 .navbar-container {
-  background-color: #fff;
+  background-color: #343a40; /* Màu nền tối giống Menu.js */
   padding: 0.5rem 1.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   height: 70px;
@@ -13,7 +13,7 @@
 .navbar-brand-text {
   font-size: 1.6rem;
   font-weight: 600;
-  color: #333;
+  color: #fff;
   letter-spacing: -0.02em;
 
   @media (max-width: 1280px) {
@@ -45,7 +45,7 @@
 .navbar-link {
   font-size: 1rem;
   font-weight: 600;
-  color: #555;
+  color: #fff; /* Màu chữ trắng giống Menu.js */
   text-decoration: none;
   padding: 0.5rem 0;
   position: relative;
@@ -58,12 +58,12 @@
     height: 2px;
     bottom: 0;
     left: 0;
-    background-color: #1976d2;
+    background-color: #ff9900; /* Màu active giống Menu.js */
     transition: width 0.3s ease;
   }
 
   &:hover {
-    color: #333;
+    color: #ff9900; /* Hover màu cam giống Menu.js */
 
     &::after {
       width: 100%;
@@ -71,11 +71,11 @@
   }
 
   &.active {
-    color: #1976d2;
+    color: #ff9900; /* Màu active giống Menu.js */
 
     &::after {
       width: 100%;
-      background-color: #1976d2;
+      background-color: #ff9900;
     }
   }
 
@@ -88,34 +88,43 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #555;
+  color: #fff; /* Màu trắng giống Menu.js */
 
   &:hover {
-    color: #333;
+    color: #ff9900; /* Hover màu cam giống Menu.js */
   }
 }
 
 .navbar-mobile-menu {
-  background-color: #fff;
+  background-color: #4caf50; /* Màu nền dropdown giống Menu.js */
   padding: 1rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
   .MuiMenuItem-root {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #555;
+    color: #fff; /* Màu chữ trắng giống Menu.js */
     padding: 1rem 0.5rem;
     border-radius: 8px;
     transition: background-color 0.2s ease, color 0.2s ease;
 
     &:hover {
-      background-color: #e3f2fd;
-      color: #1976d2;
+      background-color: #388e3c; /* Màu hover tối hơn một chút */
+      color: #ff9900; /* Màu chữ hover giống Menu.js */
     }
 
     &.active {
-      color: #1976d2;
-      background-color: #e8f0fe;
+      color: #ff9900; /* Màu active giống Menu.js */
+      background-color: #388e3c; /* Màu nền active tối hơn */
     }
   }
+}
+
+.cart-badge {
+  background-color: #ff9900; /* Màu badge giống Menu.js */
+  color: #fff;
+  border-radius: 50%;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+  margin-left: 0.3rem;
 }

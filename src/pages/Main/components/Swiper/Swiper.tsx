@@ -50,10 +50,10 @@ export const Swiper = () => {
   if (error || !tours) {
     return (
       <Box sx={{ height: 400, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', bgcolor: '#f9f9f9', borderRadius: 2, p: 4, textAlign: 'center', gap: 2 }}>
-        <Typography variant="h6">Не вдалося завантажити тури</Typography>
-        <Typography variant="body2">Спробуйте оновити сторінку або зв'яжіться з нами</Typography>
+        <Typography variant="h6">Failed to load tours</Typography>
+        <Typography variant="body2">Try refreshing the page or contact us</Typography>
         <Button variant="contained" color="primary" onClick={() => window.location.reload()}>
-          Спробувати знову
+          Try again
         </Button>
       </Box>
     )
@@ -63,9 +63,9 @@ export const Swiper = () => {
   if (topTours.length === 0) {
     return (
       <Box sx={{ height: 400, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', bgcolor: '#f9f9f9', borderRadius: 2, p: 4, textAlign: 'center', gap: 2 }}>
-        <Typography variant="h6">Немає доступних турів</Typography>
+        <Typography variant="h6">No tours available</Typography>
         <Button component={Link} to="/Tours" variant="contained" color="primary">
-          Переглянути всі тури
+          View all tours
         </Button>
       </Box>
     )

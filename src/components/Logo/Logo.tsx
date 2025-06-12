@@ -1,4 +1,4 @@
-import logo from './plane.png';
+import logo from './plane.svg';
 import './Logo.scss';
 
 interface LogoProps {
