@@ -13,12 +13,14 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": true,              // Gỡ bỏ hoặc đổi thành false nếu cần emit file (Vite tự xử lý)
     "jsx": "react-jsx",
     "baseUrl": "./src",
     "paths": {
       "@/*": ["*"]
-    }
+    },
+    "outDir": "./dist"          // Thêm để chỉ định thư mục output (nếu cần emit)
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["node_modules"]   // Thêm để loại trừ thư mục không cần thiết
 }
