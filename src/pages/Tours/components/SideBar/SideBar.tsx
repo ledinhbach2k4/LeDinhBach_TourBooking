@@ -104,7 +104,7 @@ export const SideBar: React.FC<SideBarProps> = ({ onApply, onReset }) => {
       {/* Price Filter */}
       <Box className="SideBar-section">
         <Typography variant="subtitle1" className="SideBar-section-title">
-          Price (₴)
+          Price ($)
         </Typography>
         <Box className="SideBar-slider">
           <Slider

@@ -11,14 +11,14 @@ interface SearchBarProps {
   placeholder?: string;
 }
 
-export const SearchBar: React.FC<SearchBarProps> = ({ 
-  searchQuery, 
-  setSearchQuery, 
-  onKeyDown, 
-  onSearchClear, 
-  placeholder = "Пошук турів..."
+export const SearchBar: React.FC<SearchBarProps> = ({
+  searchQuery,
+  setSearchQuery,
+  onKeyDown,
+  onSearchClear,
+  placeholder = "Search tours...",
 }) => {
-  const onClearSearch = () => {
+  const handleClearSearch = () => {
     setSearchQuery("");
     onSearchClear();
   };
@@ -26,31 +26,28 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   return (
     <div className="search-container">
       <div className="search-bar">
-        <div className="search-icon">
+        <span className="search-icon">
           <Search size={18} />
-        </div>
+        </span>
         <Input
-         // isClearable
-          fullWidth
+          fullWidth // Đảm bảo input mở rộng toàn bộ
           placeholder={placeholder}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={onKeyDown}
           size="lg"
           className="search-input"
-         // onClear={onClearSearch}
-          aria-label="Пошук"
+          aria-label="Search"
           classNames={{
             inputWrapper: "search-input-wrapper",
             innerWrapper: "search-inner-wrapper",
-            clearButton: "search-clear-button"
           }}
         />
         {searchQuery && (
-          <button 
-            className="search-clear-button" 
-            onClick={onClearSearch}
-            aria-label="Очистити пошук"
+          <button
+            className="clear-button"
+            onClick={handleClearSearch}
+            aria-label="Clear search"
           >
             <X size={16} />
           </button>
@@ -58,7 +55,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       </div>
       {searchQuery && (
         <div className="search-info">
-          <span>Результати пошуку для: <strong>"{searchQuery}"</strong></span>
+          <span>
+            Search results for: <strong>"{searchQuery}"</strong>
+          </span>
         </div>
       )}
     </div>

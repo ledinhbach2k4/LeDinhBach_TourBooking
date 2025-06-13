@@ -27,16 +27,16 @@ export const Cards: React.FC<CardsProps> = ({ tours, loading }) => {
 
   if (!Array.isArray(tours)) return (
     <div className="error-message">
-      <p>Помилка завантаження даних</p>
-      <button className="retry-button">Спробувати знову</button>
+      <p>Error loading data</p>
+      <button className="retry-button">Try again</button>
     </div>
   );
 
   if (tours.length === 0) return (
     <div className="empty-state">
       <div className="empty-icon">🔍</div>
-      <p>Нічого не знайдено</p>
-      <span>Спробуйте змінити параметри пошуку</span>
+      <p>Nothing found</p>
+      <span>Try changing the search parameters</span>
     </div>
   );
 
@@ -59,12 +59,12 @@ export const Cards: React.FC<CardsProps> = ({ tours, loading }) => {
                 }}
               />
               <div className="Card-overlay">
-                <span className="Card-view">Переглянути</span>
+                <span className="Card-view">View</span>
               </div>
             </div>
             <CardFooter className="Card-footer">
               <div className="Tour-title">{tour.title}</div>
-              <div className="Tour-price">{tour.price} ₴</div>
+              <div className="Tour-price">{tour.price} $</div>
             </CardFooter>
           </Card>
         </Link>
